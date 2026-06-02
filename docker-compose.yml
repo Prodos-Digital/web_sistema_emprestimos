@@ -1,13 +1,15 @@
 # Stack isolada: Next.js (modo standalone)
 # O backend Django corre à parte (outro compose ou outro servidor).
 # Uso: cp .env.example .env  →  docker compose up -d --build
+#
+# Por defeito só loopback (127.0.0.1:3000). Para 0.0.0.0: FRONTEND_PUBLISH=0.0.0.0:3000 no .env
 
 services:
   frontend:
     build: .
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PUBLISH_PORT:-3000}:3000"
+      - "${FRONTEND_PUBLISH:-127.0.0.1:3000}:3000"
     environment:
       # URL da API Django (integration). No mesmo host que Docker: host.docker.internal.
       # Em produção: https://api.seudominio.com/integration

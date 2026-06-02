@@ -28,3 +28,9 @@ O Django corre **noutro processo** (por exemplo o compose em `back_cedula_promot
 ## Hostinger
 
 Use VPS com Docker. Alojamento partilhado em geral **não** suporta Docker Compose.
+
+Guia: **`deploy/hostinger/README.md`**. Usa o `.env` na raiz desta pasta (`cp .env.example .env`) e o `docker-compose.yml` único:
+
+```bash
+docker compose up -d --build
+```

@@ -2,6 +2,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
 
 export const authOptions = {
+  // VPS com HTTPS por IP ou domínio atrás de Nginx (ver deploy/hostinger/README.md)
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "Credentials",
