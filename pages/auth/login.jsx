@@ -41,8 +41,8 @@ export default function SingIn() {
       setLoginError(false);
 
       const result = await signIn("credentials", {
-        username: email,
-        password: password,
+        email,
+        password,
         redirect: false,
       });
 
@@ -197,7 +197,7 @@ export default function SingIn() {
                 size="small"
                 type={showPassword ? "text" : "password"}
                 InputLabelProps={{ shrink: true }}
-                inputProps={{ maxLength: 36 }}
+                inputProps={{ maxLength: 128 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment

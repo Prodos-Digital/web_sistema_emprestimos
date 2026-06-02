@@ -98,6 +98,42 @@ sudo nginx -t && sudo systemctl reload nginx
 - `curl -k -I https://127.0.0.1/` no servidor (ignora verificação do certificado).
 - No teu PC: `https://SEU_IP` → aviso de certificado → continuar → página do Next.
 
+### 502 Bad Gateway em `/admin/` ou `/integration/`
+
+O Nginx não está a conseguir falar com o Gunicorn em **127.0.0.1:8005** (ou o Next em **3000**).
+
+1. **Na VPS**, confirma que o backend está a correr e a escutar:
+
+   ```bash
+   cd /caminho/para/back_cedula_promotora
+   docker compose ps
+   docker compose logs backend --tail 80
+   sudo ss -tlnp | grep 8005
+   curl -sS -o /dev/null -w "%{http_code}\n" -H "Host: 72.60.143.19" http://127.0.0.1:8005/admin/
+   ```
+
+   Se `curl` falhar ou não aparecer `8005` em `ss`, o problema é o Docker/Django, não o Nginx.
+
+2. **Nginx no host vs reverse proxy em Docker (causa muito comum de 502)**
+
+   Se `which nginx` der **not found**, mas `sudo ss -tlnp | grep ':443'` mostrar **`docker-proxy`**, então **HTTPS está a ser servido por um contentor**, não pelo `nginx` do `apt`.
+
+   Nesse caso, no ficheiro de config **desse** contentor, `proxy_pass http://127.0.0.1:8005` aponta para o **loopback do contentor**, onde **não** corre o Gunicorn → **502**. O `curl` no **host** a `http://127.0.0.1:8005` pode dar 302 mesmo assim.
+
+   **Como ver o contentor:**
+
+   ```bash
+   docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}'
+   ```
+
+   **Caminhos de correção (escolhe um):**
+
+   - **A (recomendado no guia):** instalar Nginx no host (`apt install nginx`), copiar o `vhost-ip-https.conf`, e **parar ou alterar** o stack Docker que ocupa as portas **80/443** (senão há conflito de binding).
+   - **B (tudo em Docker):** meter o reverse proxy e o `backend` na **mesma rede Docker** e usar `proxy_pass http://nome_do_servico_backend:8005` (nome do serviço no `docker-compose.yml`).
+   - **C (atalho):** no `.env` do backend usar `BACKEND_PUBLISH=0.0.0.0:8005` e no proxy do contentor tentar **`http://172.17.0.1:8005`** (IP habitual do host na bridge `docker0`; confirma com `ip -4 addr show docker0`). **Bloqueia** a porta 8005 na firewall pública (UFW) para não expor a API à internet. Nota: com `127.0.0.1:8005` no host, outro contentor **não** consegue usar `172.17.0.1:8005` de forma fiável; por isso **C** exige publicar em `0.0.0.0:8005` ou usar **B**.
+
+3. Log de erros: se existir Nginx no host, `sudo nginx -T 2>&1 | grep error_log` mostra o caminho. Se o TLS for num contentor: `docker logs <nome>`.
+
 ## 8. Quando tiveres domínio
 
 1. Registo **A** → IP da VPS.

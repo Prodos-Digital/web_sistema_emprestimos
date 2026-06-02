@@ -13,7 +13,8 @@ export const authOptions = {
       },
       async authorize(credentials) {
         try {
-          const username = credentials?.username ?? credentials?.email;
+          // O CredentialsProvider declara `email` — usar o mesmo nome no signIn (login.jsx).
+          const username = credentials?.email ?? credentials?.username;
           const password = credentials?.password;
           if (!username || !password) {
             return null;
