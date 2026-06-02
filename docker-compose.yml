@@ -1,0 +1,18 @@
+# Stack isolada: Next.js (modo standalone)
+# O backend Django corre à parte (outro compose ou outro servidor).
+# Uso: cp .env.example .env  →  docker compose up -d --build
+
+services:
+  frontend:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PUBLISH_PORT:-3000}:3000"
+    environment:
+      # URL da API Django (integration). No mesmo host que Docker: host.docker.internal.
+      # Em produção: https://api.seudominio.com/integration
+      NEXT_INTEGRATION_URL: ${NEXT_INTEGRATION_URL:-http://host.docker.internal:8005/integration}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-only-altere-no-env-producao-minimo-32-caracteres!!}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
