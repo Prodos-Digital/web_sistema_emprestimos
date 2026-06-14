@@ -6,15 +6,21 @@
 
 services:
   frontend:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://faturamentocedulapromotora.com.br}
+        NEXT_PUBLIC_OWNER_EMAIL: ${NEXT_PUBLIC_OWNER_EMAIL:-cedulapromotora@gmail.com}
     restart: unless-stopped
     ports:
       - "${FRONTEND_PUBLISH:-127.0.0.1:3000}:3000"
     environment:
       # URL da API Django (integration). No mesmo host que Docker: host.docker.internal.
-      # Em produção: https://api.seudominio.com/integration
+      # Em produção com o mesmo domínio e LE: podes usar https://faturamentocedulapromotora.com.br/integration
       NEXT_INTEGRATION_URL: ${NEXT_INTEGRATION_URL:-http://host.docker.internal:8005/integration}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-only-altere-no-env-producao-minimo-32-caracteres!!}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://faturamentocedulapromotora.com.br}
+      NEXT_PUBLIC_OWNER_EMAIL: ${NEXT_PUBLIC_OWNER_EMAIL:-cedulapromotora@gmail.com}
     extra_hosts:
       - "host.docker.internal:host-gateway"

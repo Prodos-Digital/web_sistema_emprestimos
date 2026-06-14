@@ -26,6 +26,9 @@ export default function SingIn() {
   const router = useRouter();
   const { status } = useSession();
 
+  const ownerEmail =
+    process.env.NEXT_PUBLIC_OWNER_EMAIL || "cedulapromotora@gmail.com";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -315,6 +318,11 @@ export default function SingIn() {
               },
             }}
           >
+            Contato / proprietário:{" "}
+            <strong>
+              <a href={`mailto:${ownerEmail}`}>{ownerEmail}</a>
+            </strong>
+            <br />
             Desenvolvido por:{" "}
             <strong>
               <a href="https://linktr.ee/gtech.servicos" target="_blank">

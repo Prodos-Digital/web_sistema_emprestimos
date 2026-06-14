@@ -34,3 +34,5 @@ Guia: **`deploy/hostinger/README.md`**. Usa o `.env` na raiz desta pasta (`cp .e
 ```bash
 docker compose up -d --build
 ```
+
+Após mudar `NEXT_PUBLIC_APP_URL` ou `NEXT_PUBLIC_OWNER_EMAIL`, força rebuild (`--no-cache`) para actualizar o bundle do cliente.
